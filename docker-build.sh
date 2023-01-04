@@ -36,7 +36,7 @@ esac
 
 TAG=$VERSION-$ARCHITECTURE
 
-buildah build --squash \
+podman build --squash \
     --arch "$ARCHITECTURE" \
     --build-arg TARBALL="$TARBALL" \
     --build-arg BUILD_DATE="$BUILD_DATE" \
