@@ -11,6 +11,21 @@ stages:
     - test
     - publish
 
+.take-a-look-at-the-surroundings: &take-a-look-at-the-surroundings
+    - |
+      v() { echo "==== $ $@"; "$@"; }
+      echo "========================================"
+      v lscpu
+      v uname -a
+      v cat /proc/cmdline
+      v sh -c "cut -d ' ' -f 1 /proc/modules | sort -u"
+      v ls -l --time-style=+ /dev
+      v cat /proc/mounts
+      [ -e /proc/config.gz ] && v zgrep BINFMT_MISC /proc/config.gz
+      [ -e /boot/config-$(uname -r) ] && v grep BINFMT_MISC /boot/config-$(uname -r)
+      echo "========================================"
+      unset v
+
 build-rootfs:
     stage: build-rootfs
     image: debian:testing
@@ -19,18 +34,7 @@ build-rootfs:
             - "*.tar.gz"
             - "*.release.version"
     before_script:
-        - |
-          # Take a look at the surroundings
-          v() { echo "==== $ $@"; "$@"; }
-          echo "================================"
-          v uname -a
-          v cat /proc/cmdline
-          v sh -c "cut -d ' ' -f 1 /proc/modules | sort -u"
-          v ls -l --time-style=+ /dev
-          v cat /proc/mounts
-          [ -e /proc/config.gz ] && v zgrep BINFMT_MISC /proc/config.gz
-          [ -e /boot/config-$(uname -r) ] && v grep BINFMT_MISC /boot/config-$(uname -r)
-          echo "================================"
+        - *take-a-look-at-the-surroundings
         - |
           # Remount /builds with the dev option if needed.
           # Since GitLab migrated to Google Container-Optimized OS & Docker 19.03.15
@@ -78,6 +82,8 @@ build-docker-images:
     artifacts:
         paths:
             - "*.conf"
+    before_script:
+        - *take-a-look-at-the-surroundings
     script:
         - |
           # Install packages
@@ -112,6 +118,8 @@ test-docker-images:
     image: debian:testing
     dependencies:
         - build-docker-images
+    before_script:
+        - *take-a-look-at-the-surroundings
     script:
         - |
           # Install packages
@@ -137,6 +145,8 @@ publish-docker-images:
     image: debian:testing
     dependencies:
         - build-docker-images
+    before_script:
+        - *take-a-look-at-the-surroundings
     script:
         - |
           # Install packages
