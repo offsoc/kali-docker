@@ -22,7 +22,7 @@ if [ "$REGISTRY" != localhost ]; then
     podman pull "$REGISTRY_IMAGE/$IMAGE:$TAG"
 fi
 
-MACH=$(podman run --rm "$REGISTRY_IMAGE/$IMAGE:$TAG" uname -m)
+MACH=$(podman run --cgroups=disabled --rm "$REGISTRY_IMAGE/$IMAGE:$TAG" uname -m)
 if [ "$MACH" = "$MACHINE" ]; then
     echo "OK: Got expected machine hardware name '$MACH'"
 else
@@ -30,7 +30,7 @@ else
     exit 1
 fi
 
-DPKG_ARCH=$(podman run --rm "$REGISTRY_IMAGE/$IMAGE:$TAG" dpkg --print-architecture)
+DPKG_ARCH=$(podman run --cgroups=disabled --rm "$REGISTRY_IMAGE/$IMAGE:$TAG" dpkg --print-architecture)
 if [ "$DPKG_ARCH" = "$ARCHITECTURE" ]; then
     echo "OK: Got expected dpkg architecture '$DPKG_ARCH'"
 else
