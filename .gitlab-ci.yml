@@ -1,3 +1,9 @@
+workflow:
+    rules:
+        - if: $CI_COMMIT_TAG
+          when: never
+        - when: always
+
 variables:
     # NB: Images will appear in this order on the Docker Hub, so keep everything
     # sorted per order of importance here, both architectures and images.
