@@ -10,6 +10,8 @@ variables:
     BASE_IMAGES: "kali-rolling kali-last-release kali-dev"
     EXTRA_IMAGES: "kali-bleeding-edge kali-experimental"
     ARCHS: "amd64 i386 arm64 armhf armel"
+    # Cf. https://discussion.fedoraproject.org/t/125528/7
+    NETAVARK_FW: iptables
 
 stages:
     - build-rootfs
