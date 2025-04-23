@@ -55,6 +55,7 @@ build-rootfs:
               | gzip -dc | grep ^Filename: | grep kali-archive-keyring | head -n 1 | awk '{print $2}')
           KEYRING_PKG_URL="https://kali.download/kali/$KEYRING_PKG_PATH"
           wget -nv "$KEYRING_PKG_URL"
+          sha256sum kali-archive-keyring_*_all.deb
           dpkg -i kali-archive-keyring_*_all.deb
           rm kali-archive-keyring_*_all.deb
         - |
