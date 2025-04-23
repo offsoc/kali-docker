@@ -53,21 +53,18 @@ build-rootfs:
           dpkg -i kali-archive-keyring_*_all.deb
           rm kali-archive-keyring_*_all.deb
         - |
-          # Test the architectures right away
-          echo "Arch test:"
-          for arch in $ARCHS; do
-              echo -n "* $arch: " && /usr/lib/arch-test/$arch
-          done
+          # Test the architecture right away
+          echo -n "Arch test for $ARCH: " && /usr/lib/arch-test/$ARCH
         - |
-          # Build all the rootfs
-          for image in $BASE_IMAGES; do
-              for arch in $ARCHS; do
-                  echo "============================================================"
-                  echo "Building rootfs $image/$arch"
-                  echo "============================================================"
-                  ./build-rootfs.sh "$image" "$arch"
-              done
-          done
+          # Build the rootfs
+          echo "============================================================"
+          echo "Building rootfs $IMAGE/$ARCH"
+          echo "============================================================"
+          ./build-rootfs.sh "$IMAGE" "$ARCH"
+    parallel:
+        matrix:
+            - IMAGE: [kali-rolling, kali-last-release, kali-dev]  # $BASE_IMAGES
+              ARCH: [amd64, i386, arm64, armhf, armel]            # $ARCHS
 
 build-docker-images:
     stage: build
