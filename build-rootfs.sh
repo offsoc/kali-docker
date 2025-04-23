@@ -91,6 +91,9 @@ find "$rootfsDir"/var/log -depth -type f -print0 | xargs -0 truncate -s 0
 # https://github.com/debuerreotype/debuerreotype/pull/32
 rmdir "$rootfsDir/run/mount" 2>/dev/null || :
 
+# Inject the new keyring
+wget https://archive.kali.org/archive-keyring.gpg -O $rootfsDir/usr/share/keyrings/kali-archive-keyring.gpg
+
 echo "Creating $tarball"
 tar -C "$rootfsDir" --exclude "./dev/**" -pczf "$tarball" .
 
