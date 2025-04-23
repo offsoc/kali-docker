@@ -43,7 +43,7 @@ build-rootfs:
           apt-get update
           apt-get install -y arch-test binfmt-support debootstrap qemu-user-static wget
         - |
-          # Install Kali archive keyring
+          # Install the Kali archive keyring
           KEYRING_PKG_PATH=$(wget -nv -O - \
               https://kali.download/kali/dists/kali-rolling/main/binary-amd64/Packages.gz \
               | gzip -dc | grep ^Filename: | grep kali-archive-keyring | head -n 1 | awk '{print $2}')
@@ -53,7 +53,7 @@ build-rootfs:
           dpkg -i kali-archive-keyring_*_all.deb
           rm kali-archive-keyring_*_all.deb
         - |
-          # Test architectures right away
+          # Test the architectures right away
           echo "Arch test:"
           for arch in $ARCHS; do
               echo -n "* $arch: " && /usr/lib/arch-test/$arch
