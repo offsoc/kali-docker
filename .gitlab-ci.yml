@@ -19,20 +19,15 @@ stages:
     - test
     - publish
 
-.take-a-look-at-the-surroundings: &take-a-look-at-the-surroundings
-    - |
-      v() { echo "==== $ $@"; "$@"; }
-      echo "========================================"
-      v lscpu
-      v uname -a
-      v cat /proc/cmdline
-      v sh -c "cut -d ' ' -f 1 /proc/modules | sort -u"
-      v ls -l --time-style=+ /dev
-      v cat /proc/mounts
-      [ -e /proc/config.gz ] && v zgrep BINFMT_MISC /proc/config.gz
-      [ -e /boot/config-$(uname -r) ] && v grep BINFMT_MISC /boot/config-$(uname -r)
-      echo "========================================"
-      unset v
+.take-a-look-around: &take-a-look-around
+    - lscpu
+    - uname -a
+    - cat /proc/cmdline
+    - cut -d ' ' -f 1 /proc/modules | sort -u
+    - ls -l --time-style=+ /dev
+    - cat /proc/mounts
+    - test -e /proc/config.gz && zgrep BINFMT_MISC /proc/config.gz
+    - test -e /boot/config-$(uname -r) && grep BINFMT_MISC /boot/config-$(uname -r)
 
 build-rootfs:
     stage: build-rootfs
@@ -41,8 +36,7 @@ build-rootfs:
         paths:
             - "*.tar.gz"
             - "*.release.version"
-    before_script:
-        - *take-a-look-at-the-surroundings
+    before_script: *take-a-look-around
     script:
         - |
           # Install packages
@@ -83,8 +77,7 @@ build-docker-images:
     artifacts:
         paths:
             - "*.conf"
-    before_script:
-        - *take-a-look-at-the-surroundings
+    before_script: *take-a-look-around
     script:
         - |
           # Install packages
@@ -115,8 +108,7 @@ test-docker-images:
     image: debian:testing
     dependencies:
         - build-docker-images
-    before_script:
-        - *take-a-look-at-the-surroundings
+    before_script: *take-a-look-around
     script:
         - |
           # Install packages
@@ -138,8 +130,7 @@ publish-docker-images:
     image: debian:testing
     dependencies:
         - build-docker-images
-    before_script:
-        - *take-a-look-at-the-surroundings
+    before_script: *take-a-look-around
     script:
         - |
           # Install packages
