@@ -54,7 +54,7 @@ build-rootfs:
           rm kali-archive-keyring_*_all.deb
         - |
           # Test the architecture right away
-          echo -n "Arch test for $ARCH: " && /usr/lib/arch-test/$ARCH
+          echo -n "Arch test for $ARCH: " && /usr/libexec/arch-test/$ARCH
         - |
           # Build the rootfs
           echo "============================================================"
