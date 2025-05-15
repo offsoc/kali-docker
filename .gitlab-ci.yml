@@ -1,3 +1,60 @@
+---
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+#
+## REF: https://app.docker.com/admin/orgs/kalilinux/org-access-tokens
+#
+
+## Security and access -> Access tokens -> Generate access token
+#   - Label: Kali-Docker Build-Script
+#   - Description: https://gitlab.com/kalilinux/build-scripts/kali-docker/-/settings/ci_cd#js-cicd-variables-settings
+#   - Expiration date: Custom -> 20XX-05-24 00:00 UTC
+#   - Resources
+#     - Repository
+#       - Repository -> All kalilinux repositories: image-push
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+#
+## REF (Project): https://gitlab.com/kalilinux/build-scripts/kali-docker/-/settings/ci_cd#js-cicd-variables-settings
+#
+
+## Settings -> CI/CD -> Variables -> Expand -> Add variable
+#   - Type: Variable
+#   - Environments: All (default)
+#   - Visibility: Masked and hidden
+#   - Flags
+#       Protect variable: Enabled
+#       Expand variable reference: Disabled
+#   - Description: https://app.docker.com/admin/orgs/kalilinux/org-access-tokens/
+#   - Key: DOCKER_HUB_ACCESS_TOKEN
+#   - Value: <VALUE>
+
+## Settings -> CI/CD -> Variables -> Expand -> Add variable
+#   - Type: Variable
+#   - Environments: All (default)
+#   - Visibility: Visible
+#   - Flags
+#       Protect variable: Enabled
+#       Expand variable reference: Disabled
+#   - Description: https://hub.docker.com/u/kalilinux
+#   - Key: DOCKER_HUB_ORGANIZATION
+#   - Value: docker.io/kalilinux
+
+## Settings -> CI/CD -> Variables -> Expand -> Add variable
+#   - Type: Variable
+#   - Environments: All (default)
+#   - Visibility: Visible
+#   - Flags
+#       Protect variable: Enabled
+#       Expand variable reference: Disabled
+#   - Description: https://hub.docker.com/orgs/kalilinux/members // https://app.docker.com/admin/orgs/kalilinux/members
+#   - Key: DOCKER_HUB_USER
+#   - Value: kalilinux
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
 workflow:
     rules:
         - if: $CI_COMMIT_TAG
@@ -135,12 +192,14 @@ publish-docker-images:
           apt-get install -y ca-certificates podman
         - |
           # Login to the registries
+          echo "[i] Logging into: $CI_REGISTRY"
           echo "$CI_JOB_TOKEN" | podman login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
           if [ -n "$DOCKER_HUB_ACCESS_TOKEN" ]; then
-              echo "$DOCKER_HUB_ACCESS_TOKEN" | podman login -u "$DOCKER_HUB_USER" --password-stdin docker.io
+            echo "[i] Logging into: $DOCKER_HUB_ORGANIZATION"
+              echo "$DOCKER_HUB_ACCESS_TOKEN" | podman login -u "$DOCKER_HUB_USER" --password-stdin $DOCKER_HUB_ORGANIZATION
           fi
         - |
-          # Push images in reverse order, so that they appear in order in Docker Hub.
+          # Push images in reverse order, so that they appear in order in Docker Hub ~ https://hub.docker.com/u/kalilinux/
           ARCHS=$(printf "%s\n" $ARCHS | tac | paste -s -d " ")
           IMAGES=$(printf "%s\n" $BASE_IMAGES $EXTRA_IMAGES | tac | paste -s -d " ")
           for image in $IMAGES; do
