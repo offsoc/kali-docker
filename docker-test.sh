@@ -13,7 +13,6 @@ ARCHITECTURE=$2
 case "$ARCHITECTURE" in
     amd64) MACHINE="x86_64" ;;
     arm64) MACHINE="aarch64" ;;
-    armel) MACHINE="armv7l" ;;
     armhf) MACHINE="armv7l" ;;
     i386)  MACHINE="x86_64" ;;
 esac

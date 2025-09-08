@@ -66,7 +66,7 @@ variables:
     # sorted per order of importance here, both architectures and images.
     BASE_IMAGES: "kali-rolling kali-last-release kali-dev"
     EXTRA_IMAGES: "kali-bleeding-edge kali-experimental"
-    ARCHS: "amd64 i386 arm64 armhf armel"
+    ARCHS: "amd64 i386 arm64 armhf"
     # Cf. https://discussion.fedoraproject.org/t/125528/7
     NETAVARK_FW: iptables
 
@@ -121,7 +121,7 @@ build-rootfs:
     parallel:
         matrix:
             - IMAGE: [kali-rolling, kali-last-release, kali-dev]  # $BASE_IMAGES
-              ARCH: [amd64, i386, arm64, armhf, armel]            # $ARCHS
+              ARCH: [amd64, i386, arm64, armhf]                   # $ARCHS
 
 build-docker-images:
     stage: build
