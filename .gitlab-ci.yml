@@ -115,7 +115,7 @@ build-rootfs:
         - |
           # Install packages
           apt-get update
-          apt-get install -y arch-test binfmt-support debootstrap qemu-user-static wget
+          apt-get install -y arch-test debootstrap wget
         - |
           # Install the Kali archive keyring
           KEYRING_PKG_PATH=$(wget -nv -O - \
@@ -153,7 +153,7 @@ build-docker-images:
         - |
           # Install packages
           apt-get update
-          apt-get install -y binfmt-support ca-certificates podman qemu-user-static
+          apt-get install -y ca-certificates podman
         - |
           # Build Docker images
           echo "$CI_JOB_TOKEN" | podman login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
@@ -184,7 +184,7 @@ test-docker-images:
         - |
           # Install packages
           apt-get update
-          apt-get install -y binfmt-support ca-certificates podman qemu-user-static
+          apt-get install -y ca-certificates podman
         - |
           # Test images
           for image in $BASE_IMAGES $EXTRA_IMAGES; do
