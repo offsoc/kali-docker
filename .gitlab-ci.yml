@@ -85,6 +85,8 @@ stages:
     - cat /proc/mounts
     - test -e /proc/config.gz && zgrep BINFMT_MISC /proc/config.gz
     - test -e /boot/config-$(uname -r) && grep BINFMT_MISC /boot/config-$(uname -r)
+    - findmnt binfmt_misc || true
+    - ls -l /proc/sys/fs/binfmt_misc/
 
 .nodev-workaround: &nodev-workaround
     # Remount /builds with the dev option if needed.
