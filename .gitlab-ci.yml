@@ -86,6 +86,19 @@ stages:
     - test -e /proc/config.gz && zgrep BINFMT_MISC /proc/config.gz
     - test -e /boot/config-$(uname -r) && grep BINFMT_MISC /boot/config-$(uname -r)
 
+.nodev-workaround: &nodev-workaround
+    # Remount /builds with the dev option if needed.
+    #
+    # Since GitLab migrated to Google Container-Optimized OS & Docker 19.03.15
+    # in August 2021, /builds is mounted with the option nodev. The logs are
+    # now cluttered with 'cannot create /dev/null: Permission denied', which
+    # is not fatal, but at the same time we can easily fix it, so let's do so.
+    #
+    # Some references:
+    # * https://gitlab.com/kalilinux/build-scripts/kali-docker/-/issues/40
+    # * https://gitlab.com/gitlab-com/gl-infra/production/-/issues/5184
+    - findmnt -no options -T . | grep -qw nodev && mount -vo remount,dev $(stat -c %m .) || true
+
 build-rootfs:
     stage: build-rootfs
     image: debian:testing
@@ -93,7 +106,9 @@ build-rootfs:
         paths:
             - "*.tar.gz"
             - "*.release.version"
-    before_script: *take-a-look-around
+    before_script:
+        - *take-a-look-around
+        - *nodev-workaround
     script:
         - |
           # Install packages
