@@ -153,7 +153,7 @@ build-docker-images:
         - |
           # Install packages
           apt-get update
-          apt-get install -y ca-certificates podman
+          apt-get install -y ca-certificates podman iptables
         - |
           # Build Docker images
           echo "$CI_JOB_TOKEN" | podman login -u "$CI_REGISTRY_USER" --password-stdin "$CI_REGISTRY"
@@ -184,7 +184,7 @@ test-docker-images:
         - |
           # Install packages
           apt-get update
-          apt-get install -y ca-certificates podman
+          apt-get install -y ca-certificates podman iptables
         - |
           # Test images
           for image in $BASE_IMAGES $EXTRA_IMAGES; do
@@ -206,7 +206,7 @@ publish-docker-images:
         - |
           # Install packages
           apt-get update
-          apt-get install -y ca-certificates podman
+          apt-get install -y ca-certificates podman iptables
         - |
           # Login to the registries
           echo "[i] Logging into: $CI_REGISTRY"
